@@ -2,10 +2,12 @@
 
 namespace App\DataFixtures;
 
+use DateTime;
 use Faker\Factory;
 use App\Entity\Task;
 use App\Entity\User;
-use DateTime;
+use App\Entity\Instruction;
+use App\Entity\WorkSession;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 
@@ -18,22 +20,7 @@ class AppFixtures extends Fixture
 
         $faker = Factory::create('fr_FR');
 
-        for ($t = 0; $t < mt_rand(50, 60); $t++) {
-            // Création d'un nouvel objet Task
-            $task = new Task;
-
-            // On nourrit l'objet Task
-            $task->setName($faker->sentence(6))
-                ->setDescription($faker->paragraph(3))
-                ->setCreatedAt(new \DateTime()) // Attention les dates sont créés en fonction du réglage serveur
-                ->setDueAt(DateTime::createFromFormat('Y-m-d H:i:s', $faker->date('Y-m-d').' '.$faker->time('H:i:s')));
-
-
-            // On fait persister les données
-            $manager->persist($task);
-        }
-
-        // Création de 10 utilisateurs
+        // Création de 20 utilisateurs
         for ($i=0; $i < 20 ; $i++) { 
             $user = new User();
             $user->setEmail($faker->email())
@@ -44,6 +31,51 @@ class AppFixtures extends Fixture
 
             $manager->persist($user);
         }
+
+        $manager->flush();
+
+        $users = $manager->getRepository(User::class)->findAll();
+
+
+        // Création de 20 Work Session
+        for ($t = 0; $t < 20; $t++) {
+            // Création d'un nouvel objet Task
+            $workSession = new WorkSession;
+            $workSession->setStartDate($faker->dateTimeBetween('-6 months'))
+                        ->setEndDate($faker->dateTimeBetween('-6 months'))
+                        ->setUser($faker->randomElement($users));
+
+            $manager->persist($workSession);
+        }
+
+        // Création de 20 tâches
+        for ($t = 0; $t < 20; $t++) {
+            // Création d'un nouvel objet Task
+            $task = new Task;
+            $task->setName($faker->sentence())
+                 ->setDescription($faker->paragraph())
+                 ->setCreatedAt(new DateTime())
+                 ->setDueAt($faker->dateTimeBetween('-6 months'))
+                 ->setUserId($faker->randomElement($users));
+
+            $manager->persist($task);
+        }
+
+        // Création de 20 instructions
+        for ($t = 0; $t < 20; $t++) {
+            // Création d'un nouvel objet Task
+            $instruction = new Instruction;
+            $instruction->setName($faker->sentence())
+                        ->setDescription($faker->paragraph())
+                        ->setDate($faker->dateTimeBetween('-6 months'))
+                        ->setUserId($faker->randomElement($users));
+
+            $manager->persist($instruction);
+        }
+
+
+
+       
 
 
         $manager->flush();

@@ -46,10 +46,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: WorkSession::class)]
     private Collection $workSessions;
 
+    #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Instruction::class)]
+    private Collection $instructions;
+
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
         $this->workSessions = new ArrayCollection();
+        $this->instructions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -212,6 +216,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($workSession->getUser() === $this) {
                 $workSession->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Instruction>
+     */
+    public function getInstructions(): Collection
+    {
+        return $this->instructions;
+    }
+
+    public function addInstruction(Instruction $instruction): static
+    {
+        if (!$this->instructions->contains($instruction)) {
+            $this->instructions->add($instruction);
+            $instruction->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInstruction(Instruction $instruction): static
+    {
+        if ($this->instructions->removeElement($instruction)) {
+            // set the owning side to null (unless already changed)
+            if ($instruction->getUserId() === $this) {
+                $instruction->setUserId(null);
             }
         }
 

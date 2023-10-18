@@ -11,10 +11,17 @@
         {% endblock %}
     </head>
     <body>
+        <nav>
+            <a href="{{ path('app_task_index') }}">Tâches</a>
+            <a href="{{ path('app_work_session_index') }}">Sessions de travail</a>
+            <a href="{{ path('app_instruction_index') }}">Instructions</a>
+        </nav>
+
         <button>
             <a href="{{ path('app_logout') }}">Se déconnecter</a>
         </button>
         {% block body %}
         {% endblock %}
-    </body>
+
+    </body>    
 </html>

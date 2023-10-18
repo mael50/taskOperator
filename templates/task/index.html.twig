@@ -2,10 +2,14 @@
 
 {% block title %}Task index{% endblock %}
 
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.css">
+{% endblock %}
+
 {% block body %}
     <h1>Task index</h1>
 
-    <table class="table">
+    <table class="table" id="table">
         <thead>
             <tr>
                 <th>Id</th>
@@ -37,5 +41,15 @@
         </tbody>
     </table>
 
+
     <a href="{{ path('app_task_new') }}">Create new</a>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>    
+<script>
+    let table = new DataTable('#table');
+
+</script>
 {% endblock %}
